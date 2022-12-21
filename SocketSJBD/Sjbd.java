@@ -26,16 +26,14 @@ public class Sjbd {
             }
         }
    }
-    public static void insert (String requete) throws Exception{
-        // System.out.println("popopo");
+    public static Vector insert (String requete) throws Exception{
+        Vector<String> rep = new Vector<>();
         String filename = Sjbd.gettable(requete);
         File f = new File(filename+".txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(f,true));
         String tableau = Sjbd.gettable(requete);
        String [] tab =Sjbd.getinsert(requete);
-    //    System.out.println(tableau);
        int taille =Sjbd.verifiertailleinsert(tableau);
-    //    System.out.println(tab.length);
        if (tab.length==taille) {
             for (int i = 0; i < tab.length; i++) {
                 writer.write(tab[i]+" ");
@@ -43,15 +41,17 @@ public class Sjbd {
         writer.write(".");
             writer.write("\r\n");
             writer.close();
+            rep.add("Une ligne inserer dans la table+");
             System.out.println("Une ligne inserer dans la table+" );
        }
-       else{System.out.println("erreur lors du sauvegarde : difference de taille d attribut");}
+       else{rep.add("erreur lors du sauvegarde : difference de taille d attribut");
+        System.out.println("erreur lors du sauvegarde : difference de taille d attribut");}
+      return rep;  
     }
     public static String[] getinsert(String requete) throws IOException 
     {
         String [] table = requete.split(" ");
         String [] tbr = table[5].split(",");
-        // System.out.println(tbr[0]);
         return tbr;
     }
     public static int verifiertailleinsert(String filename) throws Exception
@@ -74,33 +74,34 @@ public class Sjbd {
         // }
         return tab[3];
     }
-    public static void select (String requete) throws Exception
-    {   String table = getselect(requete);
+    public static Vector select (String requete) throws Exception
+    {
+        String table = getselect(requete);
         String [] resultat =requete.split(" ");
         Scanner scanner = new Scanner(new File(table+".txt"));
+        int taille = 0;
+        Vector<String> rep = new Vector<>();
         if(resultat[1].equals("*"))
         {
             while(scanner.hasNextLine())
             {
                 String p = scanner.nextLine();
+                rep.add(p+"\r\n");
                 System.out.println(p+"\r\n");
             }
+            System.out.println(rep.size());
         }
-        else
-        {
-            // System.out.println("jean");
-            String [] tata = resultat[1].split(",");
-            int [] indice = new int[tata.length];
-            for (int i = 0; i < indice.length; i++) {
-              indice[i]=Sjbd.reconnaissance("test",tata[i]);
-            } 
-            // System.out.println(indice.length);
-            Sjbd.projectionpartable(resultat[3],indice);
-            // for (int i = 0; i < indice.length; i++) {
-            //     System.out.println(indice[i]);
-            // }
-        }
+         else
+         {
+             String [] tata = resultat[1].split(",");
+             int [] indice = new int[tata.length];
+             for (int i = 0; i < indice.length; i++) {
+               indice[i]=Sjbd.reconnaissance("test",tata[i]);
+             } 
+             Sjbd.projectionpartable(resultat[3],indice);
+         }
         scanner.close();
+        return rep;
     }
     public static int getvalueof(Vector<String> vec,String colonne)
     {
